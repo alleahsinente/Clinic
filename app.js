@@ -318,7 +318,12 @@
         false
       );
     } catch (error) {
-      showStatus(portalStatus, error.message || "Unable to create the account.", true);
+      var message = error.message || "Unable to create the account.";
+      if (/database error saving new user/i.test(message)) {
+        message =
+          "We couldn't create your account. Make sure your student ID and email match an active student-roster entry. If you already registered, sign in instead; otherwise ask an administrator to verify your roster entry.";
+      }
+      showStatus(portalStatus, message, true);
     }
   });
 
