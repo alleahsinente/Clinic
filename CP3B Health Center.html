@@ -1,0 +1,434 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>CP3B Health Center</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+
+:root {
+  --bg: #f4f8f8;
+  --surface: #ffffff;
+  --ink: #10292b;
+  --muted: #4a6366;
+  --line: #d3e1e1;
+  --teal: #0b6b6b;
+  --teal-soft: #dcefee;
+  --on-teal: #ffffff;
+  --alert: #b3261e;
+  --alert-soft: #fbe6e4;
+  --ok: #1d7a46;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1718; --surface: #112325; --ink: #e5f1f1; --muted: #9ab3b5; --line: #25403f;
+    --teal: #4fc3bf; --teal-soft: #14393a; --on-teal: #062022; --alert: #ff8a80; --alert-soft: #3a1a18; --ok: #6fd69a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1718; --surface: #112325; --ink: #e5f1f1; --muted: #9ab3b5; --line: #25403f;
+  --teal: #4fc3bf; --teal-soft: #14393a; --on-teal: #062022; --alert: #ff8a80; --alert-soft: #3a1a18; --ok: #6fd69a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-block: 0;
+  margin: 0;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.12; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+p { margin: 0; }
+a { color: var(--teal); }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+
+/* Nav */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); }
+header.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--surface); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink); text-decoration: none; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.nav nav { display: flex; gap: 4px 18px; flex-wrap: wrap; }
+.nav nav a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; padding: 4px 0; }
+.nav nav a:hover { color: var(--teal); }
+
+/* Hero */
+.hero { padding-block: 48px 40px; }
+.hero .wrap { display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; align-items: start; }
+.hero h1 { font-size: clamp(34px, 5.4vw, 56px); margin-block: 12px 16px; }
+.hero p.lead { font-size: 18px; color: var(--muted); max-width: 52ch; }
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 22px; border-radius: 8px; font: 600 16px var(--font-body); text-decoration: none; cursor: pointer; border: 1.5px solid var(--teal); }
+.btn.primary { background: var(--teal); color: var(--on-teal); }
+.btn.ghost { background: transparent; color: var(--teal); }
+.btn:hover { filter: brightness(1.08); }
+.status-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: grid; gap: 16px; min-width: 0; }
+.pill { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; padding: 5px 12px; border-radius: 99px; background: var(--teal-soft); color: var(--teal); width: fit-content; }
+.pill i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.pill.closed { background: var(--alert-soft); color: var(--alert); }
+.status-card dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; font-size: 15px; }
+.status-card dt { color: var(--muted); }
+.status-card dd { margin: 0; font-weight: 500; overflow-wrap: anywhere; }
+.emergency { display: flex; gap: 12px; align-items: center; background: var(--alert-soft); color: var(--alert); border-radius: 8px; padding: 12px 14px; font-weight: 600; font-size: 15px; }
+.emergency svg { width: 22px; height: 22px; flex: none; }
+
+/* Sections */
+section.block { padding-block: 56px; }
+section.alt { background: var(--surface); border-block: 1px solid var(--line); }
+.head { display: grid; gap: 10px; margin-bottom: 28px; max-width: 62ch; }
+.head h2 { font-size: clamp(26px, 3.6vw, 36px); }
+.head p { color: var(--muted); }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.svc { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+section.alt .svc { background: var(--bg); }
+.svc svg { width: 30px; height: 30px; color: var(--teal); }
+.svc h3 { font-size: 19px; }
+.svc p { color: var(--muted); font-size: 15px; }
+.svc .meta { font-size: 13px; font-weight: 600; color: var(--teal); margin-top: 4px; }
+
+/* Doctors */
+.docs { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.doc { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 4px; min-width: 0; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--teal-soft); color: var(--teal); display: grid; place-items: center; font: 700 18px var(--font-display); margin-bottom: 10px; }
+.doc h3 { font-size: 18px; }
+.doc .role { color: var(--teal); font-weight: 600; font-size: 14px; }
+.doc .days { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+/* Hours + booking */
+.split { display: grid; grid-template-columns: 1fr 1.1fr; gap: 32px; align-items: start; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 11px 12px; border-bottom: 1px solid var(--line); }
+th { font-weight: 600; width: 38%; }
+tr.today { background: var(--teal-soft); }
+tr.today th, tr.today td { color: var(--teal); font-weight: 600; }
+.fees { margin-top: 28px; }
+.fees h3 { font-size: 19px; margin-bottom: 10px; }
+form.book { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 14px; min-width: 0; }
+section.alt form.book { background: var(--bg); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+label { display: grid; gap: 5px; font-weight: 600; font-size: 14px; min-width: 0; }
+input, select, textarea { font: 400 16px var(--font-body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
+input:focus, select:focus, textarea:focus { border-color: var(--teal); }
+textarea { resize: vertical; min-height: 80px; }
+#result { border-radius: 8px; padding: 14px 16px; background: var(--teal-soft); color: var(--ink); font-size: 15px; }
+#result strong { color: var(--teal); }
+.note { font-size: 13px; color: var(--muted); }
+
+/* FAQ */
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 18px; }
+details + details { margin-top: 10px; }
+summary { cursor: pointer; font-weight: 600; padding: 15px 0; list-style-position: outside; }
+details p { color: var(--muted); padding-bottom: 16px; }
+
+/* Footer */
+footer { background: var(--ink); color: var(--bg); padding-block: 44px; margin-top: 0; }
+footer .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px; }
+footer h3 { font-size: 16px; margin-bottom: 8px; color: var(--bg); }
+footer p, footer li { font-size: 15px; opacity: 0.85; overflow-wrap: anywhere; }
+footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.copy { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 18px; font-size: 13px; opacity: 0.7; }
+.copybtn { font: 600 13px var(--font-body); background: transparent; color: inherit; border: 1px solid currentColor; border-radius: 6px; padding: 3px 10px; cursor: pointer; margin-top: 6px; opacity: 0.9; }
+
+@media (max-width: 820px) {
+  .hero .wrap, .split { grid-template-columns: 1fr; }
+  .row2 { grid-template-columns: 1fr; }
+  .hero { padding-block: 32px 24px; }
+  section.block { padding-block: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="CP3B Health Center home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor" style="color:var(--teal)"/><path d="M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z" fill="var(--on-teal)"/></svg>
+      CP3B Health Center
+    </a>
+    <nav aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#doctors">Doctors</a>
+      <a href="#hours">Hours</a>
+      <a href="#book">Book a visit</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Community primary care</p>
+        <h1>Care for the whole family, close to home.</h1>
+        <p class="lead">Check-ups, vaccines, prenatal visits, lab tests and minor procedures under one roof. Walk in during clinic hours or book a time that suits you.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#book">Book a visit</a>
+          <a class="btn ghost" href="#services">See our services</a>
+        </div>
+      </div>
+      <aside class="status-card" aria-label="Clinic status">
+        <span class="pill" id="status-pill"><i></i><span id="status-text">Checking hours…</span></span>
+        <dl>
+          <dt>Today</dt><dd id="today-hours">Mon–Fri 7:00 AM – 5:00 PM</dd>
+          <dt>Phone</dt><dd>(649) 987-6543</dd>
+          <dt>Address</dt><dd>Catalunan Pequeño, Davao City</dd>
+        </dl>
+        <div class="emergency">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>
+          <span>Emergency room open 24 hours. Call 123-111-3243.</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="block alt" id="services">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">What we offer</p>
+        <h2>Services for every age</h2>
+        <p>Most visits are handled by our general practitioners. Referrals to partner hospitals are arranged when you need a specialist.</p>
+      </div>
+      <div class="grid">
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v3a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="12" r="2"/></svg>
+          <h3>General consultation</h3>
+          <p>Fever, cough, hypertension, diabetes follow-ups, medical certificates and health advice.</p>
+          <span class="meta">Mon–Sat · walk-in or appointment</span>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="3.5"/><path d="M5 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/></svg>
+          <h3>Pediatrics &amp; immunization</h3>
+          <p>Growth checks, newborn screening and routine childhood vaccines on the national schedule.</p>
+          <span class="meta">Tue &amp; Thu · vaccine days</span>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.4-7 10-7 10z"/></svg>
+          <h3>Maternal &amp; family health</h3>
+          <p>Prenatal and postnatal visits, family planning counseling and breastfeeding support.</p>
+          <span class="meta">Mon, Wed &amp; Fri · by appointment</span>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3"/><path d="M7.5 15h9"/></svg>
+          <h3>Laboratory &amp; imaging</h3>
+          <p>Blood count, blood sugar, lipid profile, urinalysis, ECG and chest X-ray with same-day results for most tests.</p>
+          <span class="meta">Mon–Sat 7:00–11:00 AM · fasting tests</span>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8l4 4v10l-4 4H8l-4-4V7z"/><path d="M12 8v8M8 12h8"/></svg>
+          <h3>Dental care</h3>
+          <p>Cleaning, fillings, extractions and oral health checks for children and adults.</p>
+          <span class="meta">Mon–Fri · appointment advised</span>
+        </article>
+        <article class="svc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+          <h3>Pharmacy</h3>
+          <p>Prescription and over-the-counter medicines, with a pharmacist to explain how to take them.</p>
+          <span class="meta">Open during clinic hours</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="doctors">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Our team</p>
+        <h2>Doctors and clinic staff</h2>
+        <p>Sample profiles shown. Replace with your own team.</p>
+      </div>
+      <div class="docs">
+        <article class="doc"><div class="avatar" aria-hidden="true">RM</div><h3>Dr. Roger Masangya</h3><span class="role">Family medicine · Medical director</span><span class="days">Mon, Wed, Fri · 8:00 AM – 4:00 PM</span></article>
+        <article class="doc"><div class="avatar" aria-hidden="true">EJ</div><h3>Dr. Edwin Janiola Jr</h3><span class="role">Pediatrics</span><span class="days">Tue, Thu · 8:00 AM – 3:00 PM</span></article>
+        <article class="doc"><div class="avatar" aria-hidden="true">AS</div><h3>Dr. Alleah Sinente</h3><span class="role">Obstetrics &amp; gynecology</span><span class="days">Mon, Wed, Fri · 9:00 AM – 1:00 PM</span></article>
+        <article class="doc"><div class="avatar" aria-hidden="true">GG</div><h3>Dr. George Guiang</h3><span class="role">Dentistry</span><span class="days">Mon–Fri · 9:00 AM – 4:00 PM</span></article>
+        <article class="doc"><div class="avatar" aria-hidden="true">CE</div><h3>Dr. Cesar Elivera</h3><span class="role">General practice</span><span class="days">By appointment</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="hours">
+    <div class="wrap split">
+      <div>
+        <div class="head" style="margin-bottom:16px">
+          <p class="eyebrow">Hours and fees</p>
+          <h2>When to visit</h2>
+        </div>
+        <div class="table-scroll">
+          <table id="hours-table">
+            <tbody>
+              <tr data-day="1"><th>Monday</th><td>7:00 AM – 5:00 PM</td></tr>
+              <tr data-day="2"><th>Tuesday</th><td>7:00 AM – 5:00 PM</td></tr>
+              <tr data-day="3"><th>Wednesday</th><td>7:00 AM – 5:00 PM</td></tr>
+              <tr data-day="4"><th>Thursday</th><td>7:00 AM – 5:00 PM</td></tr>
+              <tr data-day="5"><th>Friday</th><td>7:00 AM – 5:00 PM</td></tr>
+              <tr data-day="6"><th>Saturday</th><td>8:00 AM – 12:00 PM</td></tr>
+              <tr data-day="0"><th>Sunday</th><td>Closed (emergency only)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="fees">
+          <h3>Common fees</h3>
+          <div class="table-scroll">
+            <table>
+              <tbody>
+                <tr><th>Consultation</th><td>₱300</td></tr>
+                <tr><th>Childhood vaccines</th><td>Free (national program)</td></tr>
+                <tr><th>Complete blood count</th><td>₱250</td></tr>
+                <tr><th>ECG</th><td>₱400</td></tr>
+                <tr><th>Dental cleaning</th><td>₱500</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note" style="margin-top:8px">Sample prices. Confirm current fees at the front desk.</p>
+        </div>
+      </div>
+
+      <form class="book" id="book" novalidate>
+        <div class="head" style="margin-bottom:0">
+          <p class="eyebrow">Appointments</p>
+          <h2 style="font-size:28px">Book a visit</h2>
+        </div>
+        <label for="f-name">Full name
+          <input id="f-name" name="name" autocomplete="name" required>
+        </label>
+        <div class="row2">
+          <label for="f-phone">Mobile number
+            <input id="f-phone" name="phone" type="tel" autocomplete="tel" required>
+          </label>
+          <label for="f-service">Service
+            <select id="f-service" name="service">
+              <option>General consultation</option>
+              <option>Pediatrics &amp; immunization</option>
+              <option>Maternal &amp; family health</option>
+              <option>Laboratory &amp; imaging</option>
+              <option>Dental care</option>
+            </select>
+          </label>
+        </div>
+        <div class="row2">
+          <label for="f-date">Preferred date
+            <input id="f-date" name="date" type="date" required>
+          </label>
+          <label for="f-time">Preferred time
+            <select id="f-time" name="time">
+              <option>Morning (7 AM – 12 PM)</option>
+              <option>Afternoon (1 PM – 5 PM)</option>
+            </select>
+          </label>
+        </div>
+        <label for="f-notes">Reason for visit (optional)
+          <textarea id="f-notes" name="notes"></textarea>
+        </label>
+        <button class="btn primary" type="submit">Request appointment</button>
+        <div id="result" role="status" aria-live="polite" hidden></div>
+        <p class="note">This form does not send data yet. Call the clinic to confirm your slot.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Before you come</p>
+        <h2>Common questions</h2>
+      </div>
+      <div style="max-width:780px">
+        <details><summary>Do I need an appointment?</summary><p>No. Walk-ins are seen in the order they arrive. Appointments are advised for dental, prenatal and laboratory visits to shorten your wait.</p></details>
+        <details><summary>What should I bring?</summary><p>A valid ID, your health insurance card if you have one, and any previous prescriptions or laboratory results.</p></details>
+        <details><summary>Which insurance do you accept?</summary><p>We accept PhilHealth and most major HMO cards. Bring your member details so the front desk can confirm coverage.</p></details>
+        <details><summary>How do I prepare for a fasting blood test?</summary><p>Do not eat or drink anything except water for 8 to 10 hours before your sample. Take your regular medicines unless your doctor tells you otherwise.</p></details>
+        <details><summary>When should I go to the emergency room instead?</summary><p>Go straight to the emergency room for chest pain, difficulty breathing, heavy bleeding, sudden weakness, seizures or serious injury. It is open 24 hours.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact">
+  <div class="wrap">
+    <div>
+      <h3>CP3B Health Center</h3>
+      <p>Catalunan Pequeño,<br>Davao City, Davao del Sur</p>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <ul>
+        <li>Phone: <span id="ph">(649) 987-6543</span></li>
+        <li>Emergency: 123-111-3243</li>
+        <li>Email: cp3bhealthcenter@gmail.com</li>
+      </ul>
+      <button class="copybtn" type="button" id="copy-phone">Copy phone number</button>
+    </div>
+    <div>
+      <h3>Clinic hours</h3>
+      <ul><li>Mon–Fri: 7:00 AM – 5:00 PM</li><li>Sat: 8:00 AM – 12:00 PM</li><li>Sun: closed</li><li>Emergency room: 24/7</li></ul>
+    </div>
+    <p class="copy">Sample content for a demonstration site. Replace names, numbers, fees and addresses with your own before use.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var hours = { 0: null, 1: [7, 17], 2: [7, 17], 3: [7, 17], 4: [7, 17], 5: [7, 17], 6: [8, 12] };
+  function fmt(h) { var s = h >= 12 ? "PM" : "AM"; var x = h % 12 || 12; return x + ":00 " + s; }
+  function update() {
+    var now = new Date(), d = now.getDay(), h = now.getHours() + now.getMinutes() / 60;
+    var pill = document.getElementById("status-pill"), txt = document.getElementById("status-text");
+    var today = hours[d];
+    document.getElementById("today-hours").textContent = today ? fmt(today[0]) + " – " + fmt(today[1]) : "Closed today (emergency only)";
+    if (today && h >= today[0] && h < today[1]) {
+      pill.className = "pill"; txt.textContent = "Open now · closes " + fmt(today[1]);
+    } else {
+      pill.className = "pill closed";
+      var next = null;
+      for (var i = 0; i < 8 && !next; i++) {
+        var dd = (d + i) % 7, t = hours[dd];
+        if (t && (i > 0 || h < t[0])) next = { i: i, day: dd, t: t };
+      }
+      var names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      txt.textContent = next ? "Closed · opens " + (next.i === 0 ? "today" : next.i === 1 ? "tomorrow" : names[next.day]) + " " + fmt(next.t[0]) : "Closed";
+    }
+    var rows = document.querySelectorAll("#hours-table tr");
+    for (var r = 0; r < rows.length; r++) rows[r].classList.toggle("today", Number(rows[r].getAttribute("data-day")) === d);
+  }
+  update();
+
+  var dateEl = document.getElementById("f-date");
+  var pad = function (n) { return (n < 10 ? "0" : "") + n; };
+  var t = new Date();
+  dateEl.min = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
+
+  document.getElementById("book").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = document.getElementById("f-name").value.trim();
+    var phone = document.getElementById("f-phone").value.trim();
+    var date = dateEl.value;
+    var res = document.getElementById("result");
+    res.hidden = false;
+    if (!name || !phone || !date) { res.textContent = "Enter your name, mobile number and preferred date to continue."; return; }
+    var day = new Date(date + "T00:00:00").getDay();
+    if (day === 0) { res.textContent = "The clinic is closed on Sundays. Choose a date from Monday to Saturday."; return; }
+    var svc = document.getElementById("f-service").value, tm = document.getElementById("f-time").value;
+    if (day === 6 && tm.indexOf("Afternoon") === 0) { res.textContent = "Saturday hours end at 12:00 PM. Choose the morning slot."; return; }
+    var nice = new Date(date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    res.innerHTML = "";
+    var s = document.createElement("strong"); s.textContent = "Request noted for " + nice + ", " + tm.toLowerCase() + ".";
+    res.appendChild(s);
+    res.appendChild(document.createTextNode(" " + svc + " for " + name + ". Call (000) 000-0000 to confirm your slot."));
+  });
+
+  var cb = document.getElementById("copy-phone");
+  cb.addEventListener("click", function () {
+    var txt = document.getElementById("ph").textContent;
+    var done = function () { cb.textContent = "Copied"; setTimeout(function () { cb.textContent = "Copy phone number"; }, 1500); };
+    try { navigator.clipboard.writeText(txt).then(done, function () { cb.textContent = "Select the number above"; }); }
+    catch (err) { cb.textContent = "Select the number above"; }
+  });
+})();
+</script>
+
+</body></html>
