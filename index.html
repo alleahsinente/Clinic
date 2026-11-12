@@ -54,6 +54,13 @@ header.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; 
 .nav nav { display: flex; gap: 4px 18px; flex-wrap: wrap; }
 .nav nav a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; padding: 4px 0; }
 .nav nav a:hover { color: var(--teal); }
+.nav nav a[aria-current="page"], .portal-nav a[aria-current="page"] { color: var(--teal); font-weight: 700; }
+.portal-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.portal-nav a { color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; text-decoration: none; font-size: 14px; font-weight: 600; }
+.portal-nav a:hover, .portal-nav a[aria-current="page"] { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+[data-page], [data-portal-view] { display: none !important; }
+[data-page].is-active-page, [data-portal-view].is-active-portal-view { display: block !important; }
+.portal-card.is-active-portal-view, .portal-section.is-active-portal-view, .portal-form.is-active-portal-view { display: grid !important; }
 
 /* Hero */
 .hero { padding-block: 48px 40px; }
@@ -160,32 +167,33 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="CP3B Health Center home">
+    <a class="brand" href="?page=home" aria-label="CP3B Health Center home">
       <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="currentColor" style="color:var(--teal)"/><path d="M13 7h6v6h6v6h-6v6h-6v-6H7v-6h6z" fill="var(--on-teal)"/></svg>
       CP3B Health Center
     </a>
     <nav aria-label="Main">
-      <a href="#services">Services</a>
-      <a href="#doctors">Doctors</a>
-      <a href="#hours">Hours</a>
-      <a href="#book">Book a visit</a>
-      <a href="#portal">Student portal</a>
-      <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
+      <a href="?page=home" data-page-link="home">Home</a>
+      <a href="?page=services" data-page-link="services">Services</a>
+      <a href="?page=doctors" data-page-link="doctors">Doctors</a>
+      <a href="?page=hours" data-page-link="hours">Hours</a>
+      <a href="?page=booking" data-page-link="booking">Book a visit</a>
+      <a href="?page=portal-signin" data-page-link="portal">Student portal</a>
+      <a href="?page=faq" data-page-link="faq">FAQ</a>
+      <a href="?page=contact" data-page-link="contact">Contact</a>
     </nav>
   </div>
 </header>
 
 <main id="top">
-  <section class="hero">
+  <section class="hero" data-page="home">
     <div class="wrap">
       <div>
         <p class="eyebrow">Community primary care</p>
         <h1>Care for the whole family, close to home.</h1>
         <p class="lead">Check-ups, vaccines, prenatal visits, lab tests and minor procedures under one roof. Walk in during clinic hours or book a time that suits you.</p>
         <div class="cta-row">
-          <a class="btn primary" href="#book">Book a visit</a>
-          <a class="btn ghost" href="#services">See our services</a>
+          <a class="btn primary" href="?page=booking">Book a visit</a>
+          <a class="btn ghost" href="?page=services">See our services</a>
         </div>
       </div>
       <aside class="status-card" aria-label="Clinic status">
@@ -203,7 +211,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
   </section>
 
-  <section class="block alt" id="services">
+  <section class="block alt" id="services" data-page="services">
     <div class="wrap">
       <div class="head">
         <p class="eyebrow">What we offer</p>
@@ -251,7 +259,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
   </section>
 
-  <section class="block" id="doctors">
+  <section class="block" id="doctors" data-page="doctors">
     <div class="wrap">
       <div class="head">
         <p class="eyebrow">Our team</p>
@@ -268,7 +276,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
   </section>
 
-  <section class="block alt" id="hours">
+  <section class="block alt" id="hours" data-page="hours">
     <div class="wrap split">
       <div>
         <div class="head" style="margin-bottom:16px">
@@ -305,7 +313,12 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
         </div>
       </div>
 
-      <form class="book" id="book" novalidate>
+    </div>
+  </section>
+
+  <section class="block" id="book" data-page="booking">
+    <div class="wrap">
+      <form class="book" id="book-form" novalidate>
         <div class="head" style="margin-bottom:0">
           <p class="eyebrow">Appointments</p>
           <h2 style="font-size:28px">Book a visit</h2>
@@ -339,7 +352,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
   </section>
 
-  <section class="block" id="faq">
+  <section class="block" id="faq" data-page="faq">
     <div class="wrap">
       <div class="head">
         <p class="eyebrow">Before you come</p>
@@ -356,7 +369,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   </section>
 </main>
 
-<section class="block alt" id="portal">
+<section class="block alt" id="portal" data-page="portal">
   <div class="wrap">
     <div class="head">
       <p class="eyebrow">Secure access</p>
@@ -366,7 +379,11 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     <div id="portal-status" class="portal-status" role="status" aria-live="polite" hidden></div>
 
     <div id="auth-panel" class="portal-grid">
-      <section class="portal-card" aria-labelledby="signin-heading">
+        <nav class="portal-nav" aria-label="Student portal access">
+          <a href="?page=portal-signin" data-portal-link="portal-signin">Sign in</a>
+          <a href="?page=portal-register" data-portal-link="portal-register">Create account</a>
+        </nav>
+      <section class="portal-card" data-portal-view="portal-signin" aria-labelledby="signin-heading">
         <h3 id="signin-heading">Student sign in</h3>
         <form class="portal-form" id="signin-form">
           <label for="signin-code">Student ID
@@ -380,7 +397,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
         <p class="note">Use the password you set for your verified account. Your student ID is an identifier, not a password.</p>
       </section>
 
-      <section class="portal-card" aria-labelledby="signup-heading">
+      <section class="portal-card" data-portal-view="portal-register" aria-labelledby="signup-heading">
         <h3 id="signup-heading">Create student account</h3>
         <form class="portal-form" id="signup-form">
           <label for="signup-code">Student ID
@@ -402,13 +419,17 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
 
     <div id="account-panel" hidden>
+      <nav class="portal-nav" aria-label="Student account">
+        <a href="?page=profile" data-portal-link="profile">My profile</a>
+        <a href="?page=student-appointments" data-portal-link="student-appointments">My appointments</a>
+      </nav>
       <div class="portal-card">
         <div class="portal-metrics">
           <span class="pill">Student ID: <span id="account-code"></span></span>
           <span class="pill">Email: <span id="account-email"></span></span>
         </div>
         <button class="btn ghost" id="signout-button" type="button">Sign out</button>
-        <form class="portal-form" id="profile-form">
+        <form class="portal-form" id="profile-form" data-portal-view="profile">
           <h3>My profile</h3>
           <div class="row2">
             <label for="profile-name">Full name
@@ -429,23 +450,31 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
           <button class="btn primary" type="submit">Save profile</button>
         </form>
       </div>
-      <section class="portal-section" aria-labelledby="student-appointments-heading">
+      <section class="portal-section" data-portal-view="student-appointments" aria-labelledby="student-appointments-heading">
         <h3 id="student-appointments-heading">My appointment requests</h3>
         <div id="student-appointments" class="portal-grid"></div>
       </section>
     </div>
 
     <section id="admin-panel" class="portal-section" aria-labelledby="admin-heading" hidden>
-      <div class="head">
-        <p class="eyebrow">Administrator</p>
-        <h2 id="admin-heading">Student dashboard</h2>
-        <p>Student information is restricted to approved administrators. Updates appear in real time.</p>
+      <nav class="portal-nav" aria-label="Administrator menu">
+        <a href="?page=admin-dashboard" data-portal-link="admin-dashboard">Dashboard</a>
+        <a href="?page=approve-student" data-portal-link="approve-student">Approve a student</a>
+        <a href="?page=student-directory" data-portal-link="student-directory">Student directory</a>
+        <a href="?page=admin-appointments" data-portal-link="admin-appointments">Appointment requests</a>
+      </nav>
+      <div data-portal-view="admin-dashboard">
+        <div class="head">
+          <p class="eyebrow">Administrator</p>
+          <h2 id="admin-heading">Student dashboard</h2>
+          <p>Student information is restricted to approved administrators. Updates appear in real time.</p>
+        </div>
+        <div class="portal-metrics">
+          <span class="pill">Students: <span id="student-count">0</span></span>
+          <span class="pill">Appointment requests: <span id="appointment-count">0</span></span>
+        </div>
       </div>
-      <div class="portal-metrics">
-        <span class="pill">Students: <span id="student-count">0</span></span>
-        <span class="pill">Appointment requests: <span id="appointment-count">0</span></span>
-      </div>
-      <section class="portal-card" aria-labelledby="roster-heading">
+      <section class="portal-card" data-portal-view="approve-student" aria-labelledby="roster-heading">
         <h3 id="roster-heading">Approve a student</h3>
         <p class="note">Add the exact student ID and email before the student registers. A matching ID format alone does not verify identity.</p>
         <form class="portal-form" id="roster-form">
@@ -471,7 +500,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
           <button class="btn primary" type="submit">Add to approved roster</button>
         </form>
       </section>
-      <section class="portal-section" aria-labelledby="directory-heading">
+      <section class="portal-section" data-portal-view="student-directory" aria-labelledby="directory-heading">
         <h3 id="directory-heading">Student directory</h3>
         <div class="portal-table">
           <table>
@@ -480,7 +509,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
           </table>
         </div>
       </section>
-      <section class="portal-section" aria-labelledby="admin-appointments-heading">
+      <section class="portal-section" data-portal-view="admin-appointments" aria-labelledby="admin-appointments-heading">
         <h3 id="admin-appointments-heading">Appointment requests</h3>
         <div id="admin-appointments" class="portal-grid"></div>
       </section>
@@ -488,7 +517,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   </div>
 </section>
 
-<footer id="contact">
+<footer id="contact" data-page="contact">
   <div class="wrap">
     <div>
       <h3>CP3B Health Center</h3>
@@ -510,6 +539,77 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     <p class="copy">Sample content for a demonstration site. Replace names, numbers, fees and addresses with your own before use.</p>
   </div>
 </footer>
+
+<script>
+(function () {
+  "use strict";
+  var portalPages = [
+    "portal-signin", "portal-register", "profile", "student-appointments",
+    "admin-dashboard", "approve-student", "student-directory", "admin-appointments"
+  ];
+  var pageTitles = {
+    home: "Home",
+    services: "Services",
+    doctors: "Doctors",
+    hours: "Hours",
+    booking: "Book a visit",
+    "portal-signin": "Student sign in",
+    "portal-register": "Create student account",
+    profile: "My profile",
+    "student-appointments": "My appointments",
+    "admin-dashboard": "Student dashboard",
+    "approve-student": "Approve a student",
+    "student-directory": "Student directory",
+    "admin-appointments": "Appointment requests",
+    faq: "FAQ",
+    contact: "Contact"
+  };
+  var hashPages = {
+    "#top": "home",
+    "#services": "services",
+    "#doctors": "doctors",
+    "#hours": "hours",
+    "#book": "booking",
+    "#portal": "portal-signin",
+    "#faq": "faq",
+    "#contact": "contact"
+  };
+  window.CP3BPage = {
+    name: "home",
+    urlFor: function (target) { return "?page=" + encodeURIComponent(target); }
+  };
+
+  function renderPage() {
+    var page = new URLSearchParams(window.location.search).get("page") ||
+      hashPages[window.location.hash] || "home";
+    if (!Object.prototype.hasOwnProperty.call(pageTitles, page)) page = "home";
+    var pageGroup = portalPages.indexOf(page) >= 0 ? "portal" : page;
+
+    document.querySelectorAll("[data-page]").forEach(function (view) {
+      view.classList.toggle("is-active-page", view.getAttribute("data-page") === pageGroup);
+    });
+    document.querySelectorAll("[data-portal-view]").forEach(function (view) {
+      view.classList.toggle("is-active-portal-view", view.getAttribute("data-portal-view") === page);
+    });
+    document.querySelectorAll("[data-page-link]").forEach(function (link) {
+      var current = link.getAttribute("data-page-link") === page ||
+        (link.getAttribute("data-page-link") === "portal" && pageGroup === "portal");
+      if (current) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+    document.querySelectorAll("[data-portal-link]").forEach(function (link) {
+      if (link.getAttribute("data-portal-link") === page) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+    document.title = "CP3B Health Center · " + pageTitles[page];
+    window.CP3BPage.name = page;
+  }
+
+  renderPage();
+  window.addEventListener("hashchange", renderPage);
+  window.addEventListener("popstate", renderPage);
+})();
+</script>
 
 <script>
 (function () {

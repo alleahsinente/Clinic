@@ -49,16 +49,54 @@
     accountPanel.hidden = !signedIn;
   }
 
+  function guardCurrentPage() {
+    if (!window.CP3BPage) return true;
+    var page = window.CP3BPage.name;
+    var accountPages = ["profile", "student-appointments"];
+    var adminPages = [
+      "admin-dashboard", "approve-student", "student-directory", "admin-appointments"
+    ];
+    var authPages = ["portal-signin", "portal-register"];
+
+    if (accountPages.indexOf(page) >= 0 && !session) {
+      window.location.replace(window.CP3BPage.urlFor("portal-signin"));
+      return false;
+    }
+    if (adminPages.indexOf(page) >= 0 && !session) {
+      window.location.replace(window.CP3BPage.urlFor("portal-signin"));
+      return false;
+    }
+    if (adminPages.indexOf(page) >= 0 && adminPanel.hidden) {
+      window.location.replace(window.CP3BPage.urlFor("profile"));
+      return false;
+    }
+    if (authPages.indexOf(page) >= 0 && session) {
+      window.location.replace(window.CP3BPage.urlFor(adminPanel.hidden ? "profile" : "admin-dashboard"));
+      return false;
+    }
+    return true;
+  }
+
   async function loadAccount() {
+    var page = window.CP3BPage ? window.CP3BPage.name : "";
+    var portalPages = [
+      "portal-signin", "portal-register", "profile", "student-appointments",
+      "admin-dashboard", "approve-student", "student-directory", "admin-appointments"
+    ];
+    var isPortalPage = portalPages.indexOf(page) >= 0;
+    if (!isPortalPage && page !== "booking") return;
+
     var authResult = await client.auth.getSession();
     if (authResult.error) throw authResult.error;
     session = authResult.data.session;
     if (!session) {
-      setSignedInState(false);
-      adminPanel.hidden = true;
+      if (isPortalPage) setSignedInState(false);
+      if (isPortalPage) adminPanel.hidden = true;
+      guardCurrentPage();
       return;
     }
 
+    if (!isPortalPage) return;
     setSignedInState(true);
     var profileResult = await client
       .from("profiles")
@@ -74,13 +112,14 @@
       .maybeSingle();
     if (roleResult.error) throw roleResult.error;
 
+    adminPanel.hidden = !roleResult.data || roleResult.data.role !== "admin";
+    if (!guardCurrentPage()) return;
     document.getElementById("account-code").textContent = profileResult.data.student_code;
     document.getElementById("account-email").textContent = profileResult.data.email;
     document.getElementById("profile-name").value = profileResult.data.full_name || "";
     document.getElementById("profile-course").value = profileResult.data.course || "";
     document.getElementById("profile-section").value = profileResult.data.section || "";
     document.getElementById("profile-phone").value = profileResult.data.phone || "";
-    adminPanel.hidden = !roleResult.data || roleResult.data.role !== "admin";
 
     await loadStudentAppointments();
     if (!adminPanel.hidden) {
@@ -294,10 +333,9 @@
       await client.removeChannel(adminChannel);
       adminChannel = null;
     }
-    adminPanel.hidden = true;
-    accountPanel.hidden = true;
-    authPanel.hidden = false;
-    showStatus(portalStatus, "You have signed out.", false);
+    window.location.replace(window.CP3BPage
+      ? window.CP3BPage.urlFor("portal-signin")
+      : "?page=portal-signin");
   });
 
   document.getElementById("profile-form").addEventListener("submit", async function (event) {
@@ -338,7 +376,7 @@
     }
   });
 
-  document.getElementById("book").addEventListener("submit", async function (event) {
+  document.getElementById("book-form").addEventListener("submit", async function (event) {
     event.preventDefault();
     var date = document.getElementById("f-date").value;
     var resultNode = document.getElementById("result");
