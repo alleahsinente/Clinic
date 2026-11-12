@@ -117,6 +117,22 @@ textarea { resize: vertical; min-height: 80px; }
 #result { border-radius: 8px; padding: 14px 16px; background: var(--teal-soft); color: var(--ink); font-size: 15px; }
 #result strong { color: var(--teal); }
 .note { font-size: 13px; color: var(--muted); }
+.portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: start; }
+.portal-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 14px; min-width: 0; }
+.portal-card h3 { font-size: 20px; }
+.portal-form { display: grid; gap: 12px; }
+.portal-form .btn { width: 100%; }
+.portal-status { border-radius: 8px; padding: 12px 14px; background: var(--teal-soft); color: var(--ink); overflow-wrap: anywhere; }
+.portal-status.error { background: var(--alert-soft); color: var(--alert); }
+.portal-row { display: grid; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--surface); overflow-wrap: anywhere; }
+.portal-row span { color: var(--muted); font-size: 14px; }
+.portal-row .btn { justify-self: start; }
+.portal-table { overflow-x: auto; }
+.portal-table table { min-width: 680px; }
+.portal-metrics { display: flex; flex-wrap: wrap; gap: 12px; }
+.portal-metrics .pill { font-size: 15px; }
+.portal-section { display: grid; gap: 14px; margin-top: 24px; }
+.portal-section h3 { font-size: 22px; }
 
 /* FAQ */
 details { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 18px; }
@@ -153,6 +169,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
       <a href="#doctors">Doctors</a>
       <a href="#hours">Hours</a>
       <a href="#book">Book a visit</a>
+      <a href="#portal">Student portal</a>
       <a href="#faq">FAQ</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -293,13 +310,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
           <p class="eyebrow">Appointments</p>
           <h2 style="font-size:28px">Book a visit</h2>
         </div>
-        <label for="f-name">Full name
-          <input id="f-name" name="name" autocomplete="name" required>
-        </label>
         <div class="row2">
-          <label for="f-phone">Mobile number
-            <input id="f-phone" name="phone" type="tel" autocomplete="tel" required>
-          </label>
           <label for="f-service">Service
             <select id="f-service" name="service">
               <option>General consultation</option>
@@ -321,12 +332,9 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
             </select>
           </label>
         </div>
-        <label for="f-notes">Reason for visit (optional)
-          <textarea id="f-notes" name="notes"></textarea>
-        </label>
         <button class="btn primary" type="submit">Request appointment</button>
         <div id="result" role="status" aria-live="polite" hidden></div>
-        <p class="note">This form does not send data yet. Call the clinic to confirm your slot.</p>
+        <p class="note">Sign in through the student portal before requesting an appointment. Keep your contact details current in My profile. Requests are visible to authorized clinic administrators.</p>
       </form>
     </div>
   </section>
@@ -347,6 +355,138 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     </div>
   </section>
 </main>
+
+<section class="block alt" id="portal">
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">Secure access</p>
+      <h2>Student portal</h2>
+      <p>Sign in with your CCD student ID and password. New accounts require an active roster entry with the same student ID and email.</p>
+    </div>
+    <div id="portal-status" class="portal-status" role="status" aria-live="polite" hidden></div>
+
+    <div id="auth-panel" class="portal-grid">
+      <section class="portal-card" aria-labelledby="signin-heading">
+        <h3 id="signin-heading">Student sign in</h3>
+        <form class="portal-form" id="signin-form">
+          <label for="signin-code">Student ID
+            <input id="signin-code" name="student_code" autocomplete="username" placeholder="CCD-2024-00525" pattern="CCD-[0-9]{4}-[0-9]{5}" required>
+          </label>
+          <label for="signin-password">Password
+            <input id="signin-password" name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <button class="btn primary" type="submit">Sign in</button>
+        </form>
+        <p class="note">Use the password you set for your verified account. Your student ID is an identifier, not a password.</p>
+      </section>
+
+      <section class="portal-card" aria-labelledby="signup-heading">
+        <h3 id="signup-heading">Create student account</h3>
+        <form class="portal-form" id="signup-form">
+          <label for="signup-code">Student ID
+            <input id="signup-code" name="student_code" placeholder="CCD-2024-00525" pattern="CCD-[0-9]{4}-[0-9]{5}" required>
+          </label>
+          <label for="signup-name">Full name
+            <input id="signup-name" name="full_name" autocomplete="name" required>
+          </label>
+          <label for="signup-email">Email
+            <input id="signup-email" name="email" type="email" autocomplete="email" required>
+          </label>
+          <label for="signup-password">Password
+            <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          </label>
+          <button class="btn ghost" type="submit">Create account</button>
+        </form>
+        <p class="note">Only students pre-approved by an administrator can register. Email confirmation is required.</p>
+      </section>
+    </div>
+
+    <div id="account-panel" hidden>
+      <div class="portal-card">
+        <div class="portal-metrics">
+          <span class="pill">Student ID: <span id="account-code"></span></span>
+          <span class="pill">Email: <span id="account-email"></span></span>
+        </div>
+        <button class="btn ghost" id="signout-button" type="button">Sign out</button>
+        <form class="portal-form" id="profile-form">
+          <h3>My profile</h3>
+          <div class="row2">
+            <label for="profile-name">Full name
+              <input id="profile-name" name="full_name" autocomplete="name" required>
+            </label>
+            <label for="profile-phone">Mobile number
+              <input id="profile-phone" name="phone" type="tel" autocomplete="tel">
+            </label>
+          </div>
+          <div class="row2">
+            <label for="profile-course">Course / program
+              <input id="profile-course" name="course">
+            </label>
+            <label for="profile-section">Year / section
+              <input id="profile-section" name="section">
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Save profile</button>
+        </form>
+      </div>
+      <section class="portal-section" aria-labelledby="student-appointments-heading">
+        <h3 id="student-appointments-heading">My appointment requests</h3>
+        <div id="student-appointments" class="portal-grid"></div>
+      </section>
+    </div>
+
+    <section id="admin-panel" class="portal-section" aria-labelledby="admin-heading" hidden>
+      <div class="head">
+        <p class="eyebrow">Administrator</p>
+        <h2 id="admin-heading">Student dashboard</h2>
+        <p>Student information is restricted to approved administrators. Updates appear in real time.</p>
+      </div>
+      <div class="portal-metrics">
+        <span class="pill">Students: <span id="student-count">0</span></span>
+        <span class="pill">Appointment requests: <span id="appointment-count">0</span></span>
+      </div>
+      <section class="portal-card" aria-labelledby="roster-heading">
+        <h3 id="roster-heading">Approve a student</h3>
+        <p class="note">Add the exact student ID and email before the student registers. A matching ID format alone does not verify identity.</p>
+        <form class="portal-form" id="roster-form">
+          <div class="row2">
+            <label for="roster-code">Student ID
+              <input id="roster-code" name="student_code" placeholder="CCD-2024-00525" pattern="CCD-[0-9]{4}-[0-9]{5}" required>
+            </label>
+            <label for="roster-email">Student email
+              <input id="roster-email" name="email" type="email" required>
+            </label>
+          </div>
+          <label for="roster-name">Full name
+            <input id="roster-name" name="full_name">
+          </label>
+          <div class="row2">
+            <label for="roster-course">Course / program
+              <input id="roster-course" name="course">
+            </label>
+            <label for="roster-section">Year / section
+              <input id="roster-section" name="section">
+            </label>
+          </div>
+          <button class="btn primary" type="submit">Add to approved roster</button>
+        </form>
+      </section>
+      <section class="portal-section" aria-labelledby="directory-heading">
+        <h3 id="directory-heading">Student directory</h3>
+        <div class="portal-table">
+          <table>
+            <thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Course</th><th>Section</th><th>Phone</th></tr></thead>
+            <tbody id="student-directory"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="portal-section" aria-labelledby="admin-appointments-heading">
+        <h3 id="admin-appointments-heading">Appointment requests</h3>
+        <div id="admin-appointments" class="portal-grid"></div>
+      </section>
+    </section>
+  </div>
+</section>
 
 <footer id="contact">
   <div class="wrap">
@@ -402,25 +542,6 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   var t = new Date();
   dateEl.min = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
 
-  document.getElementById("book").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var name = document.getElementById("f-name").value.trim();
-    var phone = document.getElementById("f-phone").value.trim();
-    var date = dateEl.value;
-    var res = document.getElementById("result");
-    res.hidden = false;
-    if (!name || !phone || !date) { res.textContent = "Enter your name, mobile number and preferred date to continue."; return; }
-    var day = new Date(date + "T00:00:00").getDay();
-    if (day === 0) { res.textContent = "The clinic is closed on Sundays. Choose a date from Monday to Saturday."; return; }
-    var svc = document.getElementById("f-service").value, tm = document.getElementById("f-time").value;
-    if (day === 6 && tm.indexOf("Afternoon") === 0) { res.textContent = "Saturday hours end at 12:00 PM. Choose the morning slot."; return; }
-    var nice = new Date(date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-    res.innerHTML = "";
-    var s = document.createElement("strong"); s.textContent = "Request noted for " + nice + ", " + tm.toLowerCase() + ".";
-    res.appendChild(s);
-    res.appendChild(document.createTextNode(" " + svc + " for " + name + ". Call (000) 000-0000 to confirm your slot."));
-  });
-
   var cb = document.getElementById("copy-phone");
   cb.addEventListener("click", function () {
     var txt = document.getElementById("ph").textContent;
@@ -430,5 +551,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   });
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./app.js"></script>
 
 </body></html>
