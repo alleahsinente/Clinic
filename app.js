@@ -49,6 +49,21 @@
     accountPanel.hidden = !signedIn;
   }
 
+  function setBookingProfile(profile) {
+    var name = document.getElementById("booking-name");
+    var contact = document.getElementById("booking-contact");
+    if (!name || !contact) return;
+    if (!profile) {
+      name.textContent = "Sign in through the Student portal before requesting an appointment.";
+      contact.textContent = "Update your name and contact details in My profile if needed.";
+      return;
+    }
+    name.textContent = profile.full_name || "Name not set";
+    contact.textContent = profile.phone
+      ? "Phone on file: " + profile.phone
+      : "No phone number is on file. Update My profile if the clinic needs to call.";
+  }
+
   function guardCurrentPage() {
     if (!window.CP3BPage) return true;
     var page = window.CP3BPage.name;
@@ -90,13 +105,25 @@
     if (authResult.error) throw authResult.error;
     session = authResult.data.session;
     if (!session) {
+      if (page === "booking") setBookingProfile(null);
       if (isPortalPage) setSignedInState(false);
       if (isPortalPage) adminPanel.hidden = true;
       guardCurrentPage();
       return;
     }
 
-    if (!isPortalPage) return;
+    if (!isPortalPage) {
+      if (page === "booking") {
+        var bookingProfileResult = await client
+          .from("profiles")
+          .select("full_name, phone")
+          .eq("id", session.user.id)
+          .single();
+        if (bookingProfileResult.error) throw bookingProfileResult.error;
+        setBookingProfile(bookingProfileResult.data);
+      }
+      return;
+    }
     setSignedInState(true);
     var profileResult = await client
       .from("profiles")
@@ -158,6 +185,95 @@
         item.appendChild(element("span", row.profiles.email));
       }
       if (includeStudent) {
+        var intake = document.createElement("details");
+        intake.className = "intake-details";
+        intake.appendChild(element("summary", "View private intake details"));
+        var intakeList = document.createElement("dl");
+        var appendIntakeField = function (label, value) {
+          intakeList.appendChild(element("dt", label));
+          intakeList.appendChild(element("dd", value || "Not provided"));
+        };
+        var symptomLabels = {
+          fever: "Fever",
+          cough: "Cough",
+          colds: "Colds",
+          headache: "Headache",
+          severe_chest_pain: "Severe chest pain",
+          heavy_bleeding: "Heavy bleeding",
+          seizures: "Seizures",
+          sudden_weakness: "Sudden weakness",
+          stomach_pain: "Stomach pain",
+          difficulty_breathing: "Difficulty breathing",
+          body_aches: "Body aches",
+          dizziness: "Dizziness",
+          other: "Other",
+        };
+        var conditionLabels = {
+          hypertension: "Hypertension",
+          diabetes: "Diabetes",
+          asthma: "Asthma",
+          heart_disease: "Heart disease",
+          kidney_disease: "Kidney disease",
+          tb: "TB",
+          none: "None",
+          other: "Other",
+        };
+        var needLabels = {
+          wheelchair: "Wheelchair access",
+          mobility_assistance: "Help getting around",
+          seating_assistance: "Help sitting or standing",
+          pwd: "PWD assistance",
+          senior: "Senior assistance",
+          other: "Other",
+          none: "No assistance needed",
+        };
+        var valueLabel = function (value, labels) {
+          return labels[value] || value || "Not provided";
+        };
+        appendIntakeField("Reason for visit", row.visit_reason);
+        appendIntakeField("Symptoms", (row.symptoms || []).map(function (value) {
+          return valueLabel(value, symptomLabels);
+        }).join(", "));
+        appendIntakeField("Symptom duration", valueLabel(row.symptom_duration, {
+          today: "Today",
+          "1_3_days": "1–3 days",
+          more_than_week: "More than a week",
+          more_than_month: "More than a month",
+        }));
+        appendIntakeField("Additional symptom notes", row.symptom_notes);
+        appendIntakeField("Past conditions", (row.medical_conditions || []).map(function (value) {
+          return valueLabel(value, conditionLabels);
+        }).join(", "));
+        appendIntakeField("Condition notes", row.condition_notes);
+        appendIntakeField("Medicines", row.medications);
+        appendIntakeField("Allergies", row.allergies);
+        appendIntakeField("Pregnancy", valueLabel(row.pregnancy_status, {
+          yes: "Yes",
+          no: "No",
+          unsure: "Not sure",
+          prefer_not_to_say: "Prefer not to say",
+        }));
+        appendIntakeField("Wellbeing", valueLabel(row.wellbeing, {
+          good: "Good",
+          a_bit_heavy: "A bit heavy",
+          sad_or_anxious: "I often feel sad or anxious",
+          prefer_to_talk: "I would rather talk to the doctor",
+        }));
+        appendIntakeField("Access needs", (row.accessibility_needs || []).map(function (value) {
+          return valueLabel(value, needLabels);
+        }).join(", "));
+        appendIntakeField("Access notes", row.accessibility_notes);
+        appendIntakeField("Confirmation preference", valueLabel(row.contact_preference, {
+          no_preference: "No preference",
+          call: "Call",
+          text: "Text message",
+        }));
+        appendIntakeField("Privacy consent", row.privacy_consent_at
+          ? "Recorded " + new Date(row.privacy_consent_at).toLocaleString()
+          : "Not recorded");
+        intake.appendChild(intakeList);
+        item.appendChild(intake);
+
         var select = document.createElement("select");
         select.setAttribute("aria-label", "Appointment status");
         ["pending", "confirmed", "cancelled", "completed"].forEach(function (status) {
@@ -198,7 +314,7 @@
 
     var appointmentsResult = await client
       .from("appointments")
-      .select("id, student_id, service, appointment_date, time_slot, status, created_at, profiles(student_code, full_name, email)")
+      .select("id, student_id, service, appointment_date, time_slot, status, created_at, visit_reason, symptoms, symptom_duration, symptom_notes, medical_conditions, condition_notes, medications, allergies, pregnancy_status, wellbeing, accessibility_needs, accessibility_notes, contact_preference, privacy_consent_at, profiles(student_code, full_name, email)")
       .order("created_at", { ascending: false });
     if (appointmentsResult.error) throw appointmentsResult.error;
 
@@ -381,28 +497,136 @@
     }
   });
 
-  document.getElementById("book-form").addEventListener("submit", async function (event) {
+  var bookingForm = document.getElementById("book-form");
+  var bookingSteps = Array.prototype.slice.call(bookingForm.querySelectorAll("[data-booking-step]"));
+  var bookingProgressItems = Array.prototype.slice.call(
+    bookingForm.querySelectorAll(".booking-steps li")
+  );
+  var bookingStepNames = ["Visit details", "Reason and symptoms", "Health and consent"];
+  var bookingStep = 1;
+  var bookingResult = document.getElementById("result");
+  var bookingBack = document.getElementById("booking-back");
+  var bookingNext = document.getElementById("booking-next");
+  var bookingSubmit = document.getElementById("booking-submit");
+
+  function showBookingResult(message, isError) {
+    bookingResult.textContent = message;
+    bookingResult.hidden = false;
+    bookingResult.classList.toggle("error", Boolean(isError));
+  }
+
+  function setBookingStep(nextStep, moveFocus) {
+    bookingStep = nextStep;
+    bookingSteps.forEach(function (stepPanel) {
+      stepPanel.hidden = Number(stepPanel.getAttribute("data-booking-step")) !== bookingStep;
+    });
+    bookingProgressItems.forEach(function (item, index) {
+      if (index + 1 === bookingStep) item.setAttribute("aria-current", "step");
+      else item.removeAttribute("aria-current");
+      if (index + 1 < bookingStep) item.setAttribute("data-complete", "true");
+      else item.removeAttribute("data-complete");
+    });
+    document.getElementById("booking-step-label").textContent =
+      "Step " + bookingStep + " of " + bookingSteps.length + ": " + bookingStepNames[bookingStep - 1];
+    bookingBack.hidden = bookingStep === 1;
+    bookingNext.hidden = bookingStep === bookingSteps.length;
+    bookingSubmit.hidden = bookingStep !== bookingSteps.length;
+    bookingResult.hidden = true;
+    bookingResult.textContent = "";
+    bookingResult.classList.remove("error");
+    if (moveFocus) bookingSteps[bookingStep - 1].querySelector("h3").focus();
+  }
+
+  function validateBookingStep(step) {
+    var controls = bookingSteps[step - 1].querySelectorAll("input, select, textarea");
+    for (var index = 0; index < controls.length; index++) {
+      if (!controls[index].checkValidity()) {
+        controls[index].reportValidity();
+        controls[index].focus();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function checkedValues(name) {
+    return Array.prototype.map.call(
+      bookingForm.querySelectorAll('input[name="' + name + '"]:checked'),
+      function (input) { return input.value; }
+    );
+  }
+
+  function checkedRadioValue(name) {
+    var selected = bookingForm.querySelector('input[name="' + name + '"]:checked');
+    return selected ? selected.value : null;
+  }
+
+  bookingForm.querySelectorAll("[data-exclusive-group]").forEach(function (input) {
+    input.addEventListener("change", function () {
+      if (!input.checked) return;
+      var groupName = input.getAttribute("data-exclusive-group");
+      var group = bookingForm.querySelectorAll(
+        'input[data-exclusive-group="' + groupName + '"]'
+      );
+      if (input.getAttribute("data-exclusive-value") === "none") {
+        group.forEach(function (option) {
+          if (option !== input) option.checked = false;
+        });
+      } else {
+        group.forEach(function (option) {
+          if (option.getAttribute("data-exclusive-value") === "none") option.checked = false;
+        });
+      }
+    });
+  });
+
+  bookingNext.addEventListener("click", function () {
+    if (!validateBookingStep(bookingStep)) return;
+    setBookingStep(Math.min(bookingStep + 1, bookingSteps.length), true);
+  });
+
+  bookingBack.addEventListener("click", function () {
+    setBookingStep(Math.max(bookingStep - 1, 1), true);
+  });
+
+  bookingForm.addEventListener("submit", async function (event) {
     event.preventDefault();
     var date = document.getElementById("f-date").value;
-    var resultNode = document.getElementById("result");
-    resultNode.hidden = false;
 
     if (!session) {
-      resultNode.textContent = "Sign in through the student portal before requesting an appointment.";
+      showBookingResult("Sign in through the student portal before requesting an appointment.", true);
       return;
     }
-    if (!date) {
-      resultNode.textContent = "Choose a preferred date to continue.";
+    if (bookingStep !== bookingSteps.length) {
+      showBookingResult("Complete the previous steps before submitting your request.", true);
       return;
     }
+    if (!validateBookingStep(bookingStep)) return;
+
+    var symptoms = checkedValues("symptoms");
+    if ([
+      "difficulty_breathing",
+      "severe_chest_pain",
+      "heavy_bleeding",
+      "seizures",
+      "sudden_weakness",
+    ].some(function (symptom) { return symptoms.indexOf(symptom) >= 0; })) {
+      showBookingResult(
+        "These symptoms need urgent care. Do not book online; go to the ER right away or call 123-111-3243.",
+        true
+      );
+      bookingResult.focus();
+      return;
+    }
+
     var day = new Date(date + "T00:00:00").getDay();
-    var timeLabel = document.getElementById("f-time").value;
+    var timeSlot = document.getElementById("f-time").value;
     if (day === 0) {
-      resultNode.textContent = "The clinic is closed on Sundays. Choose a date from Monday to Saturday.";
+      showBookingResult("The clinic is closed on Sundays. Choose a date from Monday to Saturday.", true);
       return;
     }
-    if (day === 6 && timeLabel.indexOf("Afternoon") === 0) {
-      resultNode.textContent = "Saturday hours end at 12:00 PM. Choose the morning slot.";
+    if (day === 6 && timeSlot === "afternoon") {
+      showBookingResult("Saturday hours end at 12:00 PM. Choose the morning slot.", true);
       return;
     }
 
@@ -410,17 +634,40 @@
       student_id: session.user.id,
       service: document.getElementById("f-service").value,
       appointment_date: date,
-      time_slot: timeLabel.indexOf("Afternoon") === 0 ? "afternoon" : "morning",
+      time_slot: timeSlot,
+      visit_reason: document.getElementById("f-reason").value.trim(),
+      symptoms: symptoms,
+      symptom_duration: document.getElementById("f-duration").value || null,
+      symptom_notes: document.getElementById("f-symptom-notes").value.trim() || null,
+      medical_conditions: checkedValues("medical_conditions"),
+      condition_notes: document.getElementById("f-condition-notes").value.trim() || null,
+      medications: document.getElementById("f-medications").value.trim() || null,
+      allergies: document.getElementById("f-allergies").value.trim() || null,
+      pregnancy_status: checkedRadioValue("pregnancy_status"),
+      wellbeing: checkedRadioValue("wellbeing"),
+      accessibility_needs: checkedValues("accessibility_needs"),
+      accessibility_notes: document.getElementById("f-accessibility-notes").value.trim() || null,
+      contact_preference: document.getElementById("f-contact-preference").value,
+      privacy_consent: document.getElementById("f-privacy-consent").checked,
     });
     if (insertResult.error) {
-      resultNode.textContent = insertResult.error.message;
+      showBookingResult("Unable to submit the appointment: " + insertResult.error.message, true);
       return;
     }
-    resultNode.textContent = "Appointment request submitted. The clinic will review it.";
+    bookingForm.reset();
+    setBookingStep(1, false);
+    showBookingResult("Appointment request submitted. The clinic will review it.", false);
     await loadStudentAppointments();
   });
 
   loadAccount().catch(function (error) {
+    if (window.CP3BPage && window.CP3BPage.name === "booking") {
+      showBookingResult(
+        "Unable to load your profile details: " + (error.message || "Please try again."),
+        true
+      );
+      return;
+    }
     showStatus(portalStatus, error.message || "Unable to connect to the student portal.", true);
   });
 })();

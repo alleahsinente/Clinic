@@ -51,13 +51,14 @@ header.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; 
 .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--ink); text-decoration: none; }
 .brand svg { width: 30px; height: 30px; flex: none; }
-.nav nav { display: flex; gap: 4px 18px; flex-wrap: wrap; }
-.nav nav a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; padding: 4px 0; }
+.nav nav { display: flex; gap: 4px 14px; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; }
+.nav nav a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 15px; padding: 7px 2px; white-space: nowrap; }
 .nav nav a:hover { color: var(--teal); }
-.nav nav a[aria-current="page"], .portal-nav a[aria-current="page"] { color: var(--teal); font-weight: 700; }
+.nav nav a[aria-current="page"] { color: var(--teal); font-weight: 700; }
 .portal-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .portal-nav a { color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; text-decoration: none; font-size: 14px; font-weight: 600; }
 .portal-nav a:hover, .portal-nav a[aria-current="page"] { color: var(--teal); border-color: var(--teal); background: var(--teal-soft); }
+[data-portal-link][aria-current="page"] { box-shadow: inset 3px 0 var(--teal); }
 [data-page], [data-portal-view] { display: none !important; }
 [data-page].is-active-page, [data-portal-view].is-active-portal-view { display: block !important; }
 .portal-card.is-active-portal-view, .portal-section.is-active-portal-view, .portal-form.is-active-portal-view { display: grid !important; }
@@ -114,14 +115,42 @@ tr.today { background: var(--teal-soft); }
 tr.today th, tr.today td { color: var(--teal); font-weight: 600; }
 .fees { margin-top: 28px; }
 .fees h3 { font-size: 19px; margin-bottom: 10px; }
-form.book { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 14px; min-width: 0; }
+form.book { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: clamp(20px, 3vw, 36px); display: grid; gap: 22px; min-width: 0; box-shadow: 0 16px 40px rgba(16, 41, 43, 0.08); }
 section.alt form.book { background: var(--bg); }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 label { display: grid; gap: 5px; font-weight: 600; font-size: 14px; min-width: 0; }
 input, select, textarea { font: 400 16px var(--font-body); color: var(--ink); background: var(--surface); border: 1.5px solid var(--line); border-radius: 8px; padding: 10px 12px; width: 100%; min-width: 0; }
 input:focus, select:focus, textarea:focus { border-color: var(--teal); }
 textarea { resize: vertical; min-height: 80px; }
+.book .eyebrow { margin-bottom: 4px; }
+.booking-warning { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--alert); border-left-width: 5px; border-radius: 10px; background: var(--alert-soft); color: var(--alert); }
+.booking-warning strong { font-size: 16px; }
+.booking-progress { display: grid; gap: 10px; }
+.booking-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.booking-steps li { border-top: 4px solid var(--line); padding-top: 8px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.booking-steps li[aria-current="step"], .booking-steps li[data-complete="true"] { border-color: var(--teal); color: var(--teal); }
+.booking-step { display: grid; gap: 18px; }
+.booking-step h3 { font-size: 21px; }
+.booking-fields { display: grid; gap: 16px; }
+.booking-fieldset { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.booking-fieldset legend { margin-bottom: 4px; font-weight: 700; }
+.option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 8px; }
+.option-label { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); font-weight: 500; cursor: pointer; }
+.option-label input { width: 20px; height: 20px; flex: none; margin: 0; accent-color: var(--teal); }
+.booking-profile { display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.booking-profile span { color: var(--muted); }
+.booking-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+.booking-actions .btn { flex: 1 1 180px; }
+.privacy-consent { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; font-weight: 500; }
+.privacy-consent input { width: 20px; height: 20px; flex: none; margin: 2px 0 0; accent-color: var(--teal); }
+.privacy-consent a { font-weight: 700; }
+.intake-details { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+.intake-details summary { color: var(--teal); font-size: 14px; }
+.intake-details dl { display: grid; grid-template-columns: minmax(130px, 0.8fr) 1.2fr; gap: 6px 12px; margin: 8px 0 0; font-size: 14px; }
+.intake-details dt { color: var(--muted); font-weight: 600; }
+.intake-details dd { margin: 0; overflow-wrap: anywhere; }
 #result { border-radius: 8px; padding: 14px 16px; background: var(--teal-soft); color: var(--ink); font-size: 15px; }
+#result.error { background: var(--alert-soft); color: var(--alert); }
 #result strong { color: var(--teal); }
 .note { font-size: 13px; color: var(--muted); }
 .portal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; align-items: start; }
@@ -162,6 +191,16 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   .hero { padding-block: 32px 24px; }
   section.block { padding-block: 40px; }
 }
+@media (min-width: 900px) {
+  body { padding-left: 252px; }
+  header.nav { position: fixed; inset: env(safe-area-inset-top, 0px) auto 0 0; width: 252px; height: calc(100dvh - env(safe-area-inset-top, 0px)); overflow-y: auto; border-right: 1px solid var(--line); border-bottom: 0; }
+  .nav .wrap { display: grid; align-content: start; justify-content: stretch; gap: 28px; width: 100%; max-width: none; min-height: 100%; padding: 24px 16px; }
+  .brand { font-size: 18px; }
+  .nav nav { display: grid; gap: 5px; overflow: visible; }
+  .nav nav a { display: flex; align-items: center; min-height: 46px; padding: 9px 12px; border-radius: 9px; }
+  .nav nav a[aria-current="page"] { background: var(--teal-soft); box-shadow: inset 3px 0 var(--teal); padding-left: 15px; }
+  .wrap { max-width: 1160px; }
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 
@@ -180,6 +219,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
       <a href="?page=portal-signin" data-page-link="portal">Student portal</a>
       <a href="?page=faq" data-page-link="faq">FAQ</a>
       <a href="?page=contact" data-page-link="contact">Contact</a>
+      <a href="?page=privacy" data-page-link="privacy">Privacy</a>
     </nav>
   </div>
 </header>
@@ -318,36 +358,176 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 
   <section class="block" id="book" data-page="booking">
     <div class="wrap">
-      <form class="book" id="book-form" novalidate>
+      <form class="book" id="book-form">
+        <div class="booking-warning" role="alert" aria-labelledby="booking-warning-title">
+          <strong id="booking-warning-title">Emergency warning</strong>
+          <p>If you have severe chest pain, difficulty breathing, heavy bleeding, seizures, or sudden weakness, do not book an appointment. Go to the ER right away or call 123-111-3243. These cases should not wait for an appointment.</p>
+        </div>
         <div class="head" style="margin-bottom:0">
           <p class="eyebrow">Appointments</p>
           <h2 style="font-size:28px">Book a visit</h2>
+          <p class="note">This information helps the clinic prepare for your consultation; it is not a diagnosis or a replacement for speaking with the doctor.</p>
         </div>
-        <div class="row2">
-          <label for="f-service">Service
-            <select id="f-service" name="service">
-              <option>General consultation</option>
-              <option>Pediatrics &amp; immunization</option>
-              <option>Maternal &amp; family health</option>
-              <option>Laboratory &amp; imaging</option>
-              <option>Dental care</option>
-            </select>
-          </label>
+        <div class="booking-progress">
+          <p id="booking-step-label" role="status" aria-live="polite">Step 1 of 3: Visit details</p>
+          <ol class="booking-steps" aria-label="Appointment request progress">
+            <li aria-current="step">1. Visit details</li>
+            <li>2. Reason and symptoms</li>
+            <li>3. Health and consent</li>
+          </ol>
         </div>
-        <div class="row2">
-          <label for="f-date">Preferred date
-            <input id="f-date" name="date" type="date" required>
-          </label>
-          <label for="f-time">Preferred time
-            <select id="f-time" name="time">
-              <option>Morning (7 AM – 12 PM)</option>
-              <option>Afternoon (1 PM – 5 PM)</option>
-            </select>
-          </label>
+
+        <div class="booking-step" data-booking-step="1">
+          <h3 tabindex="-1">Step 1: Visit details</h3>
+          <div class="booking-fields">
+            <label for="f-service">Service
+              <select id="f-service" name="service" required>
+                <option>General consultation</option>
+                <option>Pediatrics &amp; immunization</option>
+                <option>Maternal &amp; family health</option>
+                <option>Laboratory &amp; imaging</option>
+                <option>Dental care</option>
+              </select>
+            </label>
+            <div class="row2">
+              <label for="f-date">Preferred date
+                <input id="f-date" name="date" type="date" required>
+              </label>
+              <label for="f-time">Preferred time
+                <select id="f-time" name="time" required>
+                  <option value="morning">Morning (7 AM – 12 PM)</option>
+                  <option value="afternoon">Afternoon (1 PM – 5 PM)</option>
+                </select>
+              </label>
+            </div>
+            <div class="booking-profile" aria-live="polite">
+              <strong>Patient details from your profile</strong>
+              <span id="booking-name">Sign in through the Student portal before requesting an appointment.</span>
+              <span id="booking-contact">Update your name and contact details in My profile if needed.</span>
+            </div>
+          </div>
         </div>
-        <button class="btn primary" type="submit">Request appointment</button>
-        <div id="result" role="status" aria-live="polite" hidden></div>
-        <p class="note">Sign in through the student portal before requesting an appointment. Keep your contact details current in My profile. Requests are visible to authorized clinic administrators.</p>
+
+        <div class="booking-step" data-booking-step="2" hidden>
+          <h3 tabindex="-1">Step 2: Reason and symptoms</h3>
+          <div class="booking-fields">
+            <label for="f-reason">What brings you in today? <span>(required)</span>
+              <input id="f-reason" name="visit_reason" type="text" minlength="2" maxlength="300" placeholder="For example: fever, cough, check-up, vaccine" required>
+            </label>
+            <fieldset class="booking-fieldset">
+              <legend>Current symptoms (optional)</legend>
+              <div class="option-grid">
+                <label class="option-label"><input type="checkbox" name="symptoms" value="fever"> Fever</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="cough"> Cough</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="colds"> Colds</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="headache"> Headache</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="severe_chest_pain"> Severe chest pain</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="heavy_bleeding"> Heavy bleeding</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="seizures"> Seizures</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="sudden_weakness"> Sudden weakness</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="stomach_pain"> Stomach pain</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="difficulty_breathing"> Difficulty breathing</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="body_aches"> Body aches</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="dizziness"> Dizziness</label>
+                <label class="option-label"><input type="checkbox" name="symptoms" value="other"> Other</label>
+              </div>
+              <p class="note">If you have any of the emergency symptoms listed in the warning above, do not wait for an appointment.</p>
+            </fieldset>
+            <label for="f-duration">How long has this been going on? (optional)
+              <select id="f-duration" name="symptom_duration">
+                <option value="">Choose if you wish</option>
+                <option value="today">Today</option>
+                <option value="1_3_days">1–3 days</option>
+                <option value="more_than_week">More than a week</option>
+                <option value="more_than_month">More than a month</option>
+              </select>
+            </label>
+            <label for="f-symptom-notes">Is there anything else you'd like to tell us? (optional)
+              <textarea id="f-symptom-notes" name="symptom_notes" maxlength="1000"></textarea>
+            </label>
+          </div>
+        </div>
+
+        <div class="booking-step" data-booking-step="3" hidden>
+          <h3 tabindex="-1">Step 3: Health, needs, and consent</h3>
+          <div class="booking-fields">
+            <fieldset class="booking-fieldset">
+              <legend>Past illnesses or conditions (optional)</legend>
+              <div class="option-grid">
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="hypertension" data-exclusive-group="conditions"> Hypertension</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="diabetes" data-exclusive-group="conditions"> Diabetes</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="asthma" data-exclusive-group="conditions"> Asthma</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="heart_disease" data-exclusive-group="conditions"> Heart disease</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="kidney_disease" data-exclusive-group="conditions"> Kidney disease</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="tb" data-exclusive-group="conditions"> TB</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="none" data-exclusive-group="conditions" data-exclusive-value="none"> None</label>
+                <label class="option-label"><input type="checkbox" name="medical_conditions" value="other" data-exclusive-group="conditions"> Other</label>
+              </div>
+            </fieldset>
+            <label for="f-condition-notes">If you selected other, tell us more (optional)
+              <input id="f-condition-notes" name="condition_notes" type="text" maxlength="500">
+            </label>
+            <label for="f-medications">Are you taking any medicines? List them if so. (optional)
+              <textarea id="f-medications" name="medications" maxlength="1000"></textarea>
+            </label>
+            <label for="f-allergies">Do you have any allergies (medicines, food)? (optional)
+              <textarea id="f-allergies" name="allergies" maxlength="1000"></textarea>
+            </label>
+            <fieldset class="booking-fieldset">
+              <legend>Are you pregnant, or could you be pregnant? (optional, if applicable)</legend>
+              <div class="option-grid">
+                <label class="option-label"><input type="radio" name="pregnancy_status" value="yes"> Yes</label>
+                <label class="option-label"><input type="radio" name="pregnancy_status" value="no"> No</label>
+                <label class="option-label"><input type="radio" name="pregnancy_status" value="unsure"> Not sure</label>
+                <label class="option-label"><input type="radio" name="pregnancy_status" value="prefer_not_to_say"> Prefer not to say</label>
+              </div>
+            </fieldset>
+            <fieldset class="booking-fieldset">
+              <legend>How have you been feeling these past few weeks? (optional)</legend>
+              <div class="option-grid">
+                <label class="option-label"><input type="radio" name="wellbeing" value="good"> Good</label>
+                <label class="option-label"><input type="radio" name="wellbeing" value="a_bit_heavy"> A bit heavy</label>
+                <label class="option-label"><input type="radio" name="wellbeing" value="sad_or_anxious"> I often feel sad or anxious</label>
+                <label class="option-label"><input type="radio" name="wellbeing" value="prefer_to_talk"> I'd rather talk to the doctor about it</label>
+              </div>
+              <p class="note">You don't have to answer this. You can also discuss it with the doctor.</p>
+            </fieldset>
+            <fieldset class="booking-fieldset">
+              <legend>Other patient needs (optional)</legend>
+              <div class="option-grid">
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="wheelchair" data-exclusive-group="accessibility"> Wheelchair access</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="mobility_assistance" data-exclusive-group="accessibility"> Help getting around</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="seating_assistance" data-exclusive-group="accessibility"> Help sitting or standing</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="pwd" data-exclusive-group="accessibility"> PWD assistance</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="senior" data-exclusive-group="accessibility"> Senior assistance</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="other" data-exclusive-group="accessibility"> Other</label>
+                <label class="option-label"><input type="checkbox" name="accessibility_needs" value="none" data-exclusive-group="accessibility" data-exclusive-value="none"> No assistance needed</label>
+              </div>
+            </fieldset>
+            <label for="f-accessibility-notes">Tell us about another need (optional)
+              <input id="f-accessibility-notes" name="accessibility_notes" type="text" maxlength="500">
+            </label>
+            <label for="f-contact-preference">How would you prefer to receive confirmation? (optional)
+              <select id="f-contact-preference" name="contact_preference">
+                <option value="no_preference">No preference</option>
+                <option value="call">Call</option>
+                <option value="text">Text message</option>
+              </select>
+            </label>
+            <label class="privacy-consent" for="f-privacy-consent">
+              <input id="f-privacy-consent" name="privacy_consent" type="checkbox" value="true" required>
+              <span>I agree that CP3B Health Center may use this information for my consultation. Only I and authorized clinic staff who are signed in can access it; it will not be shown publicly or sent in an email. Read the <a href="?page=privacy">privacy notice</a>.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="booking-actions">
+          <button class="btn ghost" id="booking-back" type="button" hidden>Back</button>
+          <button class="btn primary" id="booking-next" type="button">Continue</button>
+          <button class="btn primary" id="booking-submit" type="submit" hidden>Request appointment</button>
+        </div>
+        <div id="result" role="status" aria-live="polite" tabindex="-1" hidden></div>
+        <p class="note">Sign in through the student portal before submitting. Your name and contact details come from My profile. Only authorized, signed-in clinic administrators can review your intake. Please share only what is needed for your visit.</p>
       </form>
     </div>
   </section>
@@ -517,6 +697,21 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
   </div>
 </section>
 
+<section class="block" id="privacy" data-page="privacy">
+  <div class="wrap">
+    <div class="portal-card">
+      <p class="eyebrow">Your information</p>
+      <h2>Privacy notice</h2>
+      <p>Appointment and health information is sensitive personal information under the Data Privacy Act of 2012 (RA 10173). We collect only the details you choose to provide to prepare for your consultation.</p>
+      <p><strong>Who can see it:</strong> You can see your own appointment. Only authorized clinic staff signed in with an administrator account can review intake details. Intake details are not public and are not sent by email.</p>
+      <p><strong>How long it is kept:</strong> The clinic has not provided an approved fixed retention period. Until the clinic confirms one, this notice cannot state a specific duration. Information should be retained only as long as needed for care and applicable record-keeping requirements, then securely deleted or de-identified. Clinic/privacy-officer review is required before using this form with real patients.</p>
+      <p><strong>Access, correction, or deletion:</strong> Contact the clinic using verified contact information to request access to or correction/deletion of your information. Some records may need to be kept when required by applicable obligations. A privacy contact has not yet been provided for this site and must be confirmed before launch.</p>
+      <p class="note">This notice is a draft for clinic review, not legal advice. The contact details elsewhere on this demonstration site are marked as sample content and should be verified before use.</p>
+      <a class="btn ghost" href="?page=booking">Return to booking</a>
+    </div>
+  </div>
+</section>
+
 <footer id="contact" data-page="contact">
   <div class="wrap">
     <div>
@@ -529,6 +724,7 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
         <li>Phone: <span id="ph">(649) 987-6543</span></li>
         <li>Emergency: 123-111-3243</li>
         <li>Email: cp3bhealthcenter@gmail.com</li>
+        <li><a href="?page=privacy">Privacy notice</a></li>
       </ul>
       <button class="copybtn" type="button" id="copy-phone">Copy phone number</button>
     </div>
@@ -562,7 +758,8 @@ footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
     "student-directory": "Student directory",
     "admin-appointments": "Appointment requests",
     faq: "FAQ",
-    contact: "Contact"
+    contact: "Contact",
+    privacy: "Privacy notice"
   };
   var hashPages = {
     "#top": "home",

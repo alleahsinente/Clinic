@@ -47,8 +47,77 @@ create table public.appointments (
   appointment_date date not null,
   time_slot text not null check (time_slot in ('morning', 'afternoon')),
   status public.appointment_status not null default 'pending',
+  visit_reason text,
+  symptoms text[] not null default '{}',
+  symptom_duration text,
+  symptom_notes text,
+  medical_conditions text[] not null default '{}',
+  condition_notes text,
+  medications text,
+  allergies text,
+  pregnancy_status text,
+  wellbeing text,
+  accessibility_needs text[] not null default '{}',
+  accessibility_notes text,
+  contact_preference text not null default 'no_preference',
+  privacy_consent boolean not null default false,
+  privacy_consent_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  constraint appointments_visit_reason_length_check
+    check (visit_reason is null or char_length(btrim(visit_reason)) between 2 and 300),
+  constraint appointments_symptom_notes_length_check
+    check (symptom_notes is null or char_length(symptom_notes) <= 1000),
+  constraint appointments_condition_notes_length_check
+    check (condition_notes is null or char_length(condition_notes) <= 500),
+  constraint appointments_medications_length_check
+    check (medications is null or char_length(medications) <= 1000),
+  constraint appointments_allergies_length_check
+    check (allergies is null or char_length(allergies) <= 1000),
+  constraint appointments_accessibility_notes_length_check
+    check (accessibility_notes is null or char_length(accessibility_notes) <= 500),
+  constraint appointments_symptoms_allowed_check
+    check (symptoms <@ array[
+      'fever', 'cough', 'colds', 'headache', 'severe_chest_pain',
+      'heavy_bleeding', 'seizures', 'sudden_weakness', 'stomach_pain',
+      'difficulty_breathing', 'body_aches', 'dizziness', 'other'
+    ]::text[]),
+  constraint appointments_symptom_duration_allowed_check
+    check (symptom_duration is null or symptom_duration in (
+      'today', '1_3_days', 'more_than_week', 'more_than_month'
+    )),
+  constraint appointments_medical_conditions_allowed_check
+    check (
+      medical_conditions <@ array[
+        'hypertension', 'diabetes', 'asthma', 'heart_disease',
+        'kidney_disease', 'tb', 'none', 'other'
+      ]::text[]
+      and (
+        not ('none' = any(medical_conditions))
+        or cardinality(medical_conditions) = 1
+      )
+    ),
+  constraint appointments_pregnancy_status_allowed_check
+    check (pregnancy_status is null or pregnancy_status in (
+      'yes', 'no', 'unsure', 'prefer_not_to_say'
+    )),
+  constraint appointments_wellbeing_allowed_check
+    check (wellbeing is null or wellbeing in (
+      'good', 'a_bit_heavy', 'sad_or_anxious', 'prefer_to_talk'
+    )),
+  constraint appointments_accessibility_needs_allowed_check
+    check (
+      accessibility_needs <@ array[
+        'wheelchair', 'mobility_assistance', 'seating_assistance',
+        'pwd', 'senior', 'other', 'none'
+      ]::text[]
+      and (
+        not ('none' = any(accessibility_needs))
+        or cardinality(accessibility_needs) = 1
+      )
+    ),
+  constraint appointments_contact_preference_allowed_check
+    check (contact_preference in ('no_preference', 'call', 'text')),
   check (extract(dow from appointment_date) <> 0),
   check (not (extract(dow from appointment_date) = 6 and time_slot = 'afternoon'))
 );
@@ -142,6 +211,32 @@ create trigger appointments_set_updated_at
   before update on public.appointments
   for each row execute function public.set_updated_at();
 
+create or replace function public.require_appointment_intake_consent()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.visit_reason is null
+     or char_length(btrim(new.visit_reason)) not between 2 and 300 then
+    raise exception 'Please provide the main reason for your visit.';
+  end if;
+
+  if new.privacy_consent is distinct from true then
+    raise exception 'Privacy consent is required to submit an appointment request.';
+  end if;
+
+  new.privacy_consent_at := now();
+  return new;
+end;
+$$;
+
+revoke all on function public.require_appointment_intake_consent() from public, anon, authenticated;
+
+create trigger appointments_require_intake_consent
+  before insert on public.appointments
+  for each row execute function public.require_appointment_intake_consent();
+
 alter table public.student_roster enable row level security;
 alter table public.profiles enable row level security;
 alter table public.user_roles enable row level security;
@@ -195,7 +290,12 @@ grant select on public.profiles to authenticated;
 grant update (full_name, course, section, phone) on public.profiles to authenticated;
 grant select on public.user_roles to authenticated;
 grant select on public.appointments to authenticated;
-grant insert (student_id, service, appointment_date, time_slot)
+grant insert (
+  student_id, service, appointment_date, time_slot, visit_reason, symptoms,
+  symptom_duration, symptom_notes, medical_conditions, condition_notes,
+  medications, allergies, pregnancy_status, wellbeing, accessibility_needs,
+  accessibility_notes, contact_preference, privacy_consent
+)
   on public.appointments to authenticated;
 grant update (status) on public.appointments to authenticated;
 
